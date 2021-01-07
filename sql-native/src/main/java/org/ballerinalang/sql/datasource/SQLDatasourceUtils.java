@@ -32,6 +32,7 @@ import org.ballerinalang.sql.transaction.SQLTransactionContext;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,11 +68,15 @@ public class SQLDatasourceUtils {
     static boolean isSupportedDbOptionType(Object value) {
         boolean supported = false;
         if (value != null) {
+            if (value instanceof Properties) {
+                return true;
+            }
             Type type = TypeUtils.getType(value);
             int typeTag = type.getTag();
             supported = (typeTag == TypeTags.STRING_TAG || typeTag == TypeTags.INT_TAG || typeTag == TypeTags.FLOAT_TAG
                     || typeTag == TypeTags.BOOLEAN_TAG || typeTag == TypeTags.DECIMAL_TAG
                     || typeTag == TypeTags.BYTE_TAG);
+
         }
         return supported;
     }

@@ -24,6 +24,7 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * The key that uniquely identifies a connection pool encapsulated by {@link SQLDatasource}.
@@ -66,29 +67,36 @@ public class PoolKey {
         for (Map.Entry<BString, ?> entry : options.entrySet()) {
             int keyHashCode = entry.getKey().hashCode();
             Object value = entry.getValue();
-            Type type = TypeUtils.getType(value);
-            int typeTag = type.getTag();
             int valueHashCode;
-            switch (typeTag) {
-                case TypeTags.STRING_TAG:
-                case TypeTags.DECIMAL_TAG:
-                    valueHashCode = value.hashCode();
-                    break;
-                case TypeTags.BYTE_TAG:
-                case TypeTags.INT_TAG:
-                    long longValue = (Long) value;
-                    valueHashCode = (int) (longValue ^ (longValue >>> 32));
-                    break;
-                case TypeTags.FLOAT_TAG:
-                    long longValueConvertedFromDouble = Double.doubleToLongBits((Double) value);
-                    valueHashCode = (int) (longValueConvertedFromDouble ^ (longValueConvertedFromDouble >>> 32));
-                    break;
-                case TypeTags.BOOLEAN_TAG:
-                    valueHashCode = ((Boolean) value ? 1 : 0);
-                    break;
-                default:
-                    throw new AssertionError("type " + type.getName() + " shouldn't have occurred");
+
+            if (value instanceof Properties) {
+                valueHashCode = value.hashCode();
+            } else {
+                Type type = TypeUtils.getType(value);
+                int typeTag = type.getTag();
+
+                switch (typeTag) {
+                    case TypeTags.STRING_TAG:
+                    case TypeTags.DECIMAL_TAG:
+                        valueHashCode = value.hashCode();
+                        break;
+                    case TypeTags.BYTE_TAG:
+                    case TypeTags.INT_TAG:
+                        long longValue = (Long) value;
+                        valueHashCode = (int) (longValue ^ (longValue >>> 32));
+                        break;
+                    case TypeTags.FLOAT_TAG:
+                        long longValueConvertedFromDouble = Double.doubleToLongBits((Double) value);
+                        valueHashCode = (int) (longValueConvertedFromDouble ^ (longValueConvertedFromDouble >>> 32));
+                        break;
+                    case TypeTags.BOOLEAN_TAG:
+                        valueHashCode = ((Boolean) value ? 1 : 0);
+                        break;
+                    default:
+                        throw new AssertionError("type " + type.getName() + " shouldn't have occurred");
+                }
             }
+
             hashCode = hashCode + keyHashCode + valueHashCode;
         }
         return hashCode;
