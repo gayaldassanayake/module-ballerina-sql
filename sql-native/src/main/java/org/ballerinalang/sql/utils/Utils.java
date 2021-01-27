@@ -96,7 +96,7 @@ import static org.ballerinalang.sql.Constants.LAST_INSERTED_ID_FIELD;
  *
  * @since 1.2.0
  */
-class Utils {
+public class Utils {
 
     private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
     private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
@@ -1066,11 +1066,11 @@ class Utils {
     }
 
 
-    private static BMap<BString, Object> createTimeStruct(long millis) {
+    public static BMap<BString, Object> createTimeStruct(long millis) {
         return TimeUtils.createTimeRecord(millis, Constants.TIMEZONE_UTC);
     }
 
-    private static String getString(java.util.Date value) {
+    public static String getString(java.util.Date value) {
         if (value == null) {
             return null;
         }
@@ -1174,7 +1174,7 @@ class Utils {
         dateString.append(calendar.get(Calendar.DAY_OF_MONTH));
     }
 
-    private static void validatedInvalidFieldAssignment(int sqlType, Type type, String sqlTypeName)
+    public static void validatedInvalidFieldAssignment(int sqlType, Type type, String sqlTypeName)
             throws ApplicationError {
         if (!isValidFieldConstraint(sqlType, type)) {
             throw new ApplicationError(sqlTypeName + " field cannot be converted to ballerina type : "
