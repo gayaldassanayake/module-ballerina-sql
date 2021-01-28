@@ -65,7 +65,20 @@ import java.util.Set;
 import java.util.TimeZone;
 
 
-class StatementParametersProcessor extends AbstractStatementParametersProcessor{
+class StatementParameterProcessor extends AbstractStatementParameterProcessor{
+
+    private static StatementParameterProcessor instance = null;
+
+    private StatementParameterProcessor(){
+
+    }
+
+    public static StatementParameterProcessor getInstance(){
+        if(instance == null){
+            instance = new StatementParameterProcessor();
+        }
+        return instance;
+    }
 
     protected int getSQLType(BObject typedValue) throws ApplicationError{
         String sqlType = typedValue.getType().getName();

@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 
-abstract class AbstractStatementParametersProcessor{
+abstract class AbstractStatementParameterProcessor{
 
     protected abstract int getCustomOutParameter(BObject typedValue) throws ApplicationError;
     protected abstract int getCustomSQLType(BObject typedValue) throws ApplicationError;
