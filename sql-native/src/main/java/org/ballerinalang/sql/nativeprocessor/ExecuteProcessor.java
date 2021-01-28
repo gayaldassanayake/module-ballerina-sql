@@ -37,6 +37,9 @@ import static org.ballerinalang.sql.utils.Utils.getSqlQuery;
  * Reprsent the Execution Process.
  */
 public class ExecuteProcessor {
+    public static Object nativeExecute(BObject client, Object paramSQLString) {
+        return nativeExecute(client, paramSQLString, StatementParameterProcessor.getInstance());
+    }
     public static Object nativeExecute(BObject client, Object paramSQLString,
                      StatementParameterProcessor statementParameterProcessor) {
         Object dbClient = client.getNativeData(Constants.DATABASE_CLIENT);
@@ -84,6 +87,10 @@ public class ExecuteProcessor {
             return ErrorGenerator.getSQLApplicationError(
                     "Client is not properly initialized!");
         }
+    }
+
+    public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings) {
+        return nativeBatchExecute(client, paramSQLStrings, StatementParameterProcessor.getInstance());    
     }
 
     public static Object nativeBatchExecute(BObject client, BArray paramSQLStrings,
