@@ -1,27 +1,17 @@
-import io.ballerina.runtime.api.Module;
-import io.ballerina.runtime.api.PredefinedTypes;
+package org.ballerinalang.sql.parameterprocessor;
+
 import io.ballerina.runtime.api.TypeTags;
-import io.ballerina.runtime.api.creators.TypeCreator;
-import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.flags.SymbolFlags;
-import io.ballerina.runtime.api.flags.TypeFlags;
 import io.ballerina.runtime.api.types.ArrayType;
 import io.ballerina.runtime.api.types.Field;
-import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
-import io.ballerina.runtime.api.types.UnionType;
-import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
-import io.ballerina.runtime.api.utils.XmlUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BDecimal;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.api.values.BValue;
 import io.ballerina.runtime.api.values.BXml;
-import io.ballerina.runtime.transactions.TransactionResourceManager;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.stdlib.io.channels.base.Channel;
@@ -30,57 +20,46 @@ import org.ballerinalang.stdlib.io.readers.CharacterChannelReader;
 import org.ballerinalang.stdlib.io.utils.IOConstants;
 import org.ballerinalang.stdlib.time.util.TimeUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.Array;
-import java.sql.Blob;
-import java.sql.CallableStatement;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
-import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+
+import static io.ballerina.runtime.api.utils.StringUtils.fromString;
+import static org.ballerinalang.sql.utils.Utils.throwInvalidParameterError;
 
 
-class StatementParameterProcessor extends AbstractStatementParameterProcessor{
+class StatementParameterProcessor extends AbstractStatementParameterProcessor {
 
-    private static StatementParameterProcessor instance = null;
+    private static final Object lock = new Object();
+    private static volatile StatementParameterProcessor instance;
 
-    private StatementParameterProcessor(){
-
-    }
-
-    public static StatementParameterProcessor getInstance(){
-        if(instance == null){
-            instance = new StatementParameterProcessor();
+    public StatementParameterProcessor getInstance() {
+        if (instance == null) {
+            synchronized (lock) {
+                if (instance == null) {
+                    instance = new StatementParameterProcessor();
+                }
+            }
         }
         return instance;
     }
 
-    protected int getSQLType(BObject typedValue) throws ApplicationError{
+    protected int getSQLType(BObject typedValue) throws ApplicationError {
         String sqlType = typedValue.getType().getName();
         int sqlTypeValue;
         switch (sqlType) {
@@ -271,7 +250,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         }
     }
 
-    protected Object[] getArrayData(Object value) throws ApplicationError{
+    protected Object[] getArrayData(Object value) throws ApplicationError {
         Type type = TypeUtils.getType(value);
         if (value == null || type.getTag() != TypeTags.ARRAY_TAG) {
             return new Object[]{null, null};
@@ -435,7 +414,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
-            preparedStatement.setString(index, value.toString());
+            preparedStatement.setString(index, value);
         }
     }
 
@@ -445,7 +424,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
-            preparedStatement.setString(index, value.toString());
+            preparedStatement.setString(index, value);
         }
     }
 
@@ -455,7 +434,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         if (value == null) {
             preparedStatement.setString(index, null);
         } else {
-            preparedStatement.setString(index, value.toString());
+            preparedStatement.setString(index, value);
         }
     }
 
@@ -465,7 +444,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         if (value == null) {
             preparedStatement.setNString(index, null);
         } else {
-            preparedStatement.setNString(index, value.toString());
+            preparedStatement.setNString(index, value);
         }
     }
 
@@ -475,13 +454,13 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
         if (value == null) {
             preparedStatement.setNString(index, null);
         } else {
-            preparedStatement.setNString(index, value.toString());
+            preparedStatement.setNString(index, value);
         }
     }
 
     @Override
     protected void setBit(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.BOOLEAN);
         } else if (value instanceof BString) {
@@ -503,7 +482,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setBoolean(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.BOOLEAN);
         } else if (value instanceof BString) {
@@ -525,7 +504,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setInteger(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.INTEGER);
         } else if (value instanceof Integer || value instanceof Long) {
@@ -537,7 +516,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setBigInt(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.BIGINT);
         } else if (value instanceof Integer || value instanceof Long) {
@@ -549,7 +528,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setSmallInt(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.SMALLINT);
         } else if (value instanceof Integer || value instanceof Long) {
@@ -561,7 +540,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setFloat(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.FLOAT);
         } else if (value instanceof Double || value instanceof Long ||
@@ -576,7 +555,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setReal(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.FLOAT);
         } else if (value instanceof Double || value instanceof Long ||
@@ -591,7 +570,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setDouble(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.DOUBLE);
         } else if (value instanceof Double || value instanceof Long ||
@@ -606,7 +585,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setNumeric(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.DECIMAL);
         } else if (value instanceof Double || value instanceof Long) {
@@ -624,7 +603,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setDecimal(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setNull(index, Types.DECIMAL);
         } else if (value instanceof Double || value instanceof Long) {
@@ -642,7 +621,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setBinary(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError, IOException {
         if (value == null) {
             preparedStatement.setBytes(index, null);
         } else if (value instanceof BArray) {
@@ -669,7 +648,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setVarBinary(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError, IOException {
         if (value == null) {
             preparedStatement.setBytes(index, null);
         } else if (value instanceof BArray) {
@@ -696,7 +675,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setBlob(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError, IOException {
         if (value == null) {
             preparedStatement.setBytes(index, null);
         } else if (value instanceof BArray) {
@@ -722,8 +701,9 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
     }
 
     @Override
-    protected void setClob(int index, Object value, PreparedStatement preparedStatement, String sqlType, Connection connection)
-            throws SQLException {
+    protected void setClob(int index, Object value, PreparedStatement preparedStatement, String sqlType,
+            Connection connection)
+            throws SQLException, ApplicationError {
         Clob clob;
         if (value == null) {
             preparedStatement.setNull(index, Types.CLOB);
@@ -752,8 +732,9 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
     }
 
     @Override
-    protected void setNClob(int index, Object value, PreparedStatement preparedStatement, String sqlType, Connection connection)
-            throws SQLException {
+    protected void setNClob(int index, Object value, PreparedStatement preparedStatement, String sqlType,
+            Connection connection)
+            throws SQLException, ApplicationError {
         Clob clob;
         if (value == null) {
             preparedStatement.setNull(index, Types.CLOB);
@@ -783,7 +764,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setRow(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setRowId(index, null);
         } else if (value instanceof BArray) {
@@ -801,7 +782,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setStruct(int index, Object value, PreparedStatement preparedStatement, Connection connection)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         Object[] structData = getStructData(value, connection);
         Object[] dataArray = (Object[]) structData[0];
         String structuredSQLType = (String) structData[1];
@@ -815,7 +796,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setRef(int index, Object value, PreparedStatement preparedStatement, Connection connection)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         Object[] structData = getStructData(value, connection);
         Object[] dataArray = (Object[]) structData[0];
         String structuredSQLType = (String) structData[1];
@@ -829,7 +810,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setArray(int index, Object value, PreparedStatement preparedStatement, Connection connection)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         Object[] arrayData = getArrayData(value);
         if (arrayData[0] != null) {
             Array array = connection.createArrayOf((String) arrayData[1], (Object[]) arrayData[0]);
@@ -841,7 +822,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setDateTime(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setTimestamp(index, null);
         } else {
@@ -868,7 +849,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setTimestamp(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setTimestamp(index, null);
         } else {
@@ -895,7 +876,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setDate(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         Date date;
         if (value == null) {
             preparedStatement.setDate(index, null);
@@ -922,7 +903,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
 
     @Override
     protected void setTime(int index, Object value, PreparedStatement preparedStatement, String sqlType)
-            throws SQLException {
+            throws SQLException, ApplicationError {
         if (value == null) {
             preparedStatement.setTime(index, null);
         } else {
@@ -1040,23 +1021,3 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor{
     }
 
 }
-
-
-//class BObject{
-//    public String getName(){
-//        return "1";
-//    }
-//    public BObject getType(){
-//        return new BObject();
-//    }
-//}
-//class ApplicationError extends Error{
-//    public ApplicationError(String message){
-//        super(message);
-//    }
-//}
-//class Constants{
-//    static class SqlTypes{
-//        public static String ARRAY = "Array";
-//    }
-//}
