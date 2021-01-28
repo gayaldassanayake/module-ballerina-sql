@@ -42,8 +42,10 @@ import java.util.Map;
 import static io.ballerina.runtime.api.utils.StringUtils.fromString;
 import static org.ballerinalang.sql.utils.Utils.throwInvalidParameterError;
 
-
-class StatementParameterProcessor extends AbstractStatementParameterProcessor {
+/**
+ * Reprsent the Process methods for statements.
+ */
+public class StatementParameterProcessor extends AbstractStatementParameterProcessor {
 
     private static final Object lock = new Object();
     private static volatile StatementParameterProcessor instance;
@@ -314,7 +316,7 @@ class StatementParameterProcessor extends AbstractStatementParameterProcessor {
         return new Object[]{structData, structuredSQLType};
     }
 
-    protected void setParams(Connection connection, PreparedStatement preparedStatement, BObject paramString)
+    public void setParams(Connection connection, PreparedStatement preparedStatement, BObject paramString)
             throws SQLException, ApplicationError, IOException {
         BArray arrayValue = paramString.getArrayValue(Constants.ParameterizedQueryFields.INSERTIONS);
         for (int i = 0; i < arrayValue.size(); i++) {
