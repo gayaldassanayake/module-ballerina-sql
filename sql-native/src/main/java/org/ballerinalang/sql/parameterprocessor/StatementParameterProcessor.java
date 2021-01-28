@@ -50,7 +50,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
     private static final Object lock = new Object();
     private static volatile StatementParameterProcessor instance;
 
-    public StatementParameterProcessor getInstance() {
+    public static StatementParameterProcessor getInstance() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
