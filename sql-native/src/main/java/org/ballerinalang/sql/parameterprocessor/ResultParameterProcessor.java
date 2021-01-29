@@ -735,6 +735,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                                                Statement statement,
                                                Connection connection, List<ColumnDefinition> columnDefinitions,
                                                StructureType streamConstraint) {
+
         BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(),
                 Constants.RESULT_ITERATOR_OBJECT, new Object[1]);
         resultIterator.addNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD, resultSet);
