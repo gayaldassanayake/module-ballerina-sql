@@ -145,7 +145,7 @@ public abstract class AbstractResultParameterProcessor {
     protected abstract void populateReal(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException;
 
-    protected abstract void populatepopulateFloat(CallableStatement statement, BObject parameter, int paramIndex)
+    protected abstract void populateFloat(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException;
 
     protected abstract void populateDouble(CallableStatement statement, BObject parameter, int paramIndex)

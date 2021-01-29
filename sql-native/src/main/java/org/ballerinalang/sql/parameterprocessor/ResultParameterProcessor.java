@@ -1,3 +1,20 @@
+/*
+ *  Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ */
 package org.ballerinalang.sql.parameterprocessor;
 
 import io.ballerina.runtime.api.PredefinedTypes;
@@ -47,7 +64,6 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     private static final Object lock = new Object();
     private static volatile ResultParameterProcessor instance;
 
-    //TODO: Decide the place of these variables
     private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
     private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
     private static final ArrayType intArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_INT);
@@ -69,7 +85,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return instance;
     }
 
-    private BArray createAndPopulateBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
+    protected BArray createAndPopulateBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
                                                            Type type) throws ApplicationError {
         BArray refValueArray = null;
         int length = dataArray.length;
@@ -135,7 +151,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 type + " to into array ");
     }
 
-    private BArray createAndPopulatePrimitiveValueArray(Object firstNonNullElement, Object[] dataArray)
+    protected BArray createAndPopulatePrimitiveValueArray(Object firstNonNullElement, Object[] dataArray)
             throws ApplicationError {
         int length = dataArray.length;
         if (firstNonNullElement instanceof String) {
@@ -583,7 +599,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 statement.getFloat(paramIndex));
     }
 
-    protected void populatepopulateFloat(CallableStatement statement, BObject parameter, int paramIndex)
+    protected void populateFloat(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getFloat(paramIndex));
