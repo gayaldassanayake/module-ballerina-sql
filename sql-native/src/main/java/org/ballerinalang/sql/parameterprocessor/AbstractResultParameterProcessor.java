@@ -27,7 +27,15 @@ import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.utils.ColumnDefinition;
 
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLXML;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.util.List;
 
 /**
