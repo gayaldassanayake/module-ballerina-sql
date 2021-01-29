@@ -79,7 +79,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         return instance;
     }
 
-    protected int getSQLType(BObject typedValue) throws ApplicationError {
+    private int getSQLType(BObject typedValue) throws ApplicationError {
         String sqlType = typedValue.getType().getName();
         int sqlTypeValue;
         switch (sqlType) {
@@ -175,7 +175,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         return sqlTypeValue;
     }
 
-    protected void setSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
+    private void setSqlTypedParam(Connection connection, PreparedStatement preparedStatement, int index,
                                     BObject typedValue)
             throws SQLException, ApplicationError, IOException {
         String sqlType = typedValue.getType().getName();
@@ -270,7 +270,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         }
     }
 
-    protected Object[] getArrayData(Object value) throws ApplicationError {
+    private Object[] getArrayData(Object value) throws ApplicationError {
         Type type = TypeUtils.getType(value);
         if (value == null || type.getTag() != TypeTags.ARRAY_TAG) {
             return new Object[]{null, null};
@@ -297,7 +297,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         }
     }
 
-    protected Object[] getStructData(Object value, Connection conn) throws SQLException, ApplicationError {
+    private Object[] getStructData(Object value, Connection conn) throws SQLException, ApplicationError {
         Type type = TypeUtils.getType(value);
         if (value == null || (type.getTag() != TypeTags.OBJECT_TYPE_TAG
                 && type.getTag() != TypeTags.RECORD_TYPE_TAG)) {
@@ -344,7 +344,7 @@ public class StatementParameterProcessor extends AbstractStatementParameterProce
         }
     }
 
-    protected int setSQLValueParam(Connection connection, PreparedStatement preparedStatement,
+    private int setSQLValueParam(Connection connection, PreparedStatement preparedStatement,
                                    Object object, int index, boolean returnType)
             throws SQLException, ApplicationError, IOException {
         if (object == null) {
