@@ -99,7 +99,7 @@ import static org.ballerinalang.sql.Constants.LAST_INSERTED_ID_FIELD;
 public class Utils {
 
     public static void closeResources(TransactionResourceManager trxResourceManager, ResultSet resultSet, Statement statement,
-                               Connection connection) {
+               Connection connection) {
         if (resultSet != null) {
             try {
                 resultSet.close();
@@ -146,9 +146,7 @@ public class Utils {
         return new ApplicationError("Invalid parameter :" + valueName + " is passed as value for SQL type : "
                 + sqlType);
     }
-
-
-    
+  
     public static String getString(Clob data) throws IOException, SQLException {
         if (data == null) {
             return null;
