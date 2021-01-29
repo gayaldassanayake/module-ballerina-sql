@@ -52,8 +52,7 @@ public abstract class AbstractResultParameterProcessor {
 
     protected abstract BString convert(String value, int sqlType, Type type) throws ApplicationError;
 
-    protected abstract Object convert(
-    String value, int sqlType, Type type, String sqlTypeName) throws ApplicationError;
+    protected abstract Object convert(String value, int sqlType, Type type, String sqlTypeName) throws ApplicationError;
 
     protected abstract Object convert(byte[] value, int sqlType, Type type, String sqlTypeName) throws ApplicationError;
 

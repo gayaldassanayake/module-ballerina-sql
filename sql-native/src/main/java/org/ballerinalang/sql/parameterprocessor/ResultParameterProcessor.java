@@ -207,7 +207,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         throw new ApplicationError("Error while populating data of unsupported type to ballerina type to into array ");
     }
 
-    private BMap<BString, Object> createUserDefinedType(Struct structValue, StructureType structType)
+    protected BMap<BString, Object> createUserDefinedType(Struct structValue, StructureType structType)
             throws ApplicationError {
         if (structValue == null) {
             return null;
@@ -279,7 +279,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 + structType.getName() + " record.");
     }
 
-    public static Object[] validateNullable(Object[] objects) {
+    protected static Object[] validateNullable(Object[] objects) {
         Object[] returnResult = new Object[2];
         boolean foundNull = false;
         Object nonNullObject = null;
