@@ -18,15 +18,11 @@
 package org.ballerinalang.sql.utils;
 
 import io.ballerina.runtime.api.TypeTags;
-import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.ArrayType;
-import io.ballerina.runtime.api.types.StructureType;
 import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.JsonUtils;
 import io.ballerina.runtime.api.values.BError;
-import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.ResultParameterProcessor;
@@ -35,12 +31,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -48,11 +42,8 @@ import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
 
-import static io.ballerina.runtime.api.utils.StringUtils.fromString;
-import static org.ballerinalang.sql.utils.Utils.cleanUpConnection;
 import static org.ballerinalang.sql.utils.Utils.convert;
 import static org.ballerinalang.sql.utils.Utils.getString;
 
@@ -61,46 +52,16 @@ import static org.ballerinalang.sql.utils.Utils.getString;
  *
  * @since 1.2.0
  */
-public class RecordIteratorUtils {
+public class TestRecordIteratorUtils {
     private static final Calendar calendar = Calendar
             .getInstance(TimeZone.getTimeZone(Constants.TIMEZONE_UTC.getValue()));
 
     public static Object nextResult(BObject recordIterator) {
         ResultParameterProcessor resultParameterProcessor = ResultParameterProcessor.getInstance();
-        return nextResult(recordIterator, resultParameterProcessor);
+        return RecordIteratorUtils.nextResult(recordIterator, resultParameterProcessor);
     }
 
-    public static Object nextResult(BObject recordIterator, ResultParameterProcessor resultParameterProcessor) {
-        ResultSet resultSet = (ResultSet) recordIterator.getNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD);
-        try {
-            if (resultSet.next()) {
-                StructureType streamConstraint = (StructureType) recordIterator.
-                        getNativeData(Constants.RECORD_TYPE_DATA_FIELD);
-                BMap<BString, Object> bStruct = ValueCreator.createMapValue(streamConstraint);
-                List<ColumnDefinition> columnDefinitions = (List<ColumnDefinition>) recordIterator
-                        .getNativeData(Constants.COLUMN_DEFINITIONS_DATA_FIELD);
-                for (int i = 0; i < columnDefinitions.size(); i++) {
-                    ColumnDefinition columnDefinition = columnDefinitions.get(i);
-                    bStruct.put(fromString(columnDefinition.getBallerinaFieldName()),
-                            getResult(resultSet, i + 1, columnDefinition, resultParameterProcessor));
-                }
-                return bStruct;
-            } else {
-                return null;
-            }
-        } catch (SQLException e) {
-            return ErrorGenerator.getSQLDatabaseError(e, "Error when iterating the SQL result");
-        } catch (IOException | ApplicationError e) {
-            return ErrorGenerator.getSQLApplicationError("Error when iterating the SQL result. "
-                    + e.getMessage());
-        } catch (Throwable throwable) {
-            return ErrorGenerator.getSQLApplicationError("Error when iterating through the " +
-                    "SQL result. " + throwable.getMessage());
-        }
-    }
-
-    private static Object getResult(ResultSet resultSet, int columnIndex, ColumnDefinition columnDefinition,
-                    ResultParameterProcessor resultParameterProcessor)
+    private static Object getResult(ResultSet resultSet, int columnIndex, ColumnDefinition columnDefinition)
             throws SQLException, ApplicationError, IOException {
         int sqlType = columnDefinition.getSqlType();
         Type ballerinaType = columnDefinition.getBallerinaType();
@@ -225,14 +186,8 @@ public class RecordIteratorUtils {
                         throw new ApplicationError("Error while converting to JSON type. " + e.getDetails());
                     }
                 }
-                return resultParameterProcessor.getCustomResult(resultSet, columnIndex, columnDefinition);
+                throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
         }
     }
 
-    public static Object closeResult(BObject recordIterator) {
-        ResultSet resultSet = (ResultSet) recordIterator.getNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD);
-        Statement statement = (Statement) recordIterator.getNativeData(Constants.STATEMENT_NATIVE_DATA_FIELD);
-        Connection connection = (Connection) recordIterator.getNativeData(Constants.CONNECTION_NATIVE_DATA_FIELD);
-        return cleanUpConnection(recordIterator, resultSet, statement, connection);
-    }
 }

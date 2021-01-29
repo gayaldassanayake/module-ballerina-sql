@@ -131,7 +131,7 @@ public class QueryProcessor {
 
     private static BObject createRecordIterator(BError errorValue) {
         return ValueCreator.createObjectValue(ModuleUtils.getModule(), Constants.RESULT_ITERATOR_OBJECT,
-                errorValue);
+            new Object[] { errorValue, null});
     }
 
 }
