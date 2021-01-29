@@ -24,14 +24,19 @@ import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.sql.exception.ApplicationError;
+import org.ballerinalang.sql.utils.ColumnDefinition;
 
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Struct;
+import java.util.List;
 
 /**
  * This class has abstract implementation of methods required convert SQL types into ballerina types and
@@ -171,4 +176,13 @@ public abstract class AbstractResultParameterProcessor {
     protected abstract void populateXML(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException;
 
-}
+    protected abstract void populateCustomOutParameters(
+            CallableStatement statement, BObject parameter, int paramIndex, int sqlType) throws ApplicationError;
+
+    protected abstract Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType);
+
+    public abstract BObject createRecordIterator(
+            ResultSet resultSet, Statement statement, Connection connection,
+            List<ColumnDefinition> columnDefinitions, StructureType streamConstraint);
+
+    }
