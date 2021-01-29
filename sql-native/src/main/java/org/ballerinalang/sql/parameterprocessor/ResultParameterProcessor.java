@@ -37,6 +37,7 @@ import io.ballerina.runtime.api.values.BXml;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.utils.ColumnDefinition;
+import org.ballerinalang.sql.utils.ErrorGenerator;
 import org.ballerinalang.sql.utils.ModuleUtils;
 import org.ballerinalang.sql.utils.Utils;
 
@@ -715,6 +716,18 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     protected void populateXML(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getSQLXML(paramIndex));
+    }
+
+    @Override
+    protected void populateCustomOutParameters(CallableStatement statement, BObject parameter, int paramIndex, int sqlType)
+            throws ApplicationError {
+        throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
+                "Out parameter of index '" + paramIndex + "'.");
+    }
+
+    @Override
+    protected Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
+        return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 
     // TODO: change after record iterator refactoring
