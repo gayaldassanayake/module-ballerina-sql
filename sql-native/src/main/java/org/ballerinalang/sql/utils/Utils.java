@@ -161,7 +161,7 @@ public class Utils {
         }
     }
 
-    private static BMap<BString, Object> createTimeStruct(long millis) {
+    public static BMap<BString, Object> createTimeStruct(long millis) {
         return TimeUtils.createTimeRecord(millis, Constants.TIMEZONE_UTC);
     }
 
@@ -288,22 +288,6 @@ public class Utils {
         }
         return null;
     }
-
-    //need to be changed according to recorditeratorutils class
-    public static BObject createRecordIterator(ResultSet resultSet,
-                                               Statement statement,
-                                               Connection connection, List<ColumnDefinition> columnDefinitions,
-                                               StructureType streamConstraint) {
-        BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(),
-                Constants.RESULT_ITERATOR_OBJECT, new Object[1]);
-        resultIterator.addNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD, resultSet);
-        resultIterator.addNativeData(Constants.STATEMENT_NATIVE_DATA_FIELD, statement);
-        resultIterator.addNativeData(Constants.CONNECTION_NATIVE_DATA_FIELD, connection);
-        resultIterator.addNativeData(Constants.COLUMN_DEFINITIONS_DATA_FIELD, columnDefinitions);
-        resultIterator.addNativeData(Constants.RECORD_TYPE_DATA_FIELD, streamConstraint);
-        return resultIterator;
-    }
-
     public static StructureType getDefaultRecordType(List<ColumnDefinition> columnDefinitions) {
         RecordType defaultRecord = getDefaultStreamConstraint();
         Map<String, Field> fieldMap = new HashMap<>();

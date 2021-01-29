@@ -36,14 +36,19 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.runtime.api.values.BXml;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
+import org.ballerinalang.sql.utils.ColumnDefinition;
+import org.ballerinalang.sql.utils.ModuleUtils;
 import org.ballerinalang.sql.utils.Utils;
 
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Statement;
 import java.sql.Struct;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -144,9 +149,9 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return ValueCreator.createArrayValue(TypeCreator.createArrayType(unionType));
     }
 
+    @Override
     protected BArray createAndPopulateCustomBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
                                                             Type type) throws ApplicationError {
-        // TODO: Decide on throwing or returning null
         throw new ApplicationError("Error while populating data of unsupported type to ballerina type " +
                 type + " to into array ");
     }
@@ -201,9 +206,9 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected BArray createAndPopulateCustomValueArray(Object firstNonNullElement, Object[] dataArray)
             throws ApplicationError {
-        // TODO: Decide on throwing or returning null
         throw new ApplicationError("Error while populating data of unsupported type to ballerina type to into array ");
     }
 
@@ -273,6 +278,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return struct;
     }
 
+    @Override
     protected void createUserDefinedTypeSubtype(Field internalField, StructureType structType) throws ApplicationError {
         throw new ApplicationError("Error while retrieving data for unsupported type " +
                 internalField.getFieldType().getName() + " to create "
@@ -303,6 +309,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return returnResult;
     }
 
+    @Override
     protected BArray convert(Array array, int sqlType, Type type) throws SQLException, ApplicationError {
         if (array != null) {
             Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Array");
@@ -328,17 +335,20 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected BString convert(String value, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL String");
         return fromString(value);
     }
 
+    @Override
     protected Object convert(
             String value, int sqlType, Type type, String sqlTypeName) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, sqlTypeName);
         return fromString(value);
     }
 
+    @Override
     protected Object convert(byte[] value, int sqlType, Type type, String sqlTypeName) throws ApplicationError {
         if (value != null) {
             return ValueCreator.createArrayValue(value);
@@ -347,6 +357,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(long value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL long or integer");
         if (isNull) {
@@ -359,6 +370,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(double value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL double or float");
         if (isNull) {
@@ -371,6 +383,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(BigDecimal value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL decimal or real");
         if (isNull) {
@@ -383,6 +396,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(Blob value, int sqlType, Type type) throws ApplicationError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Blob");
         if (value != null) {
@@ -392,6 +406,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(java.util.Date date, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Date/Time");
         if (date != null) {
@@ -408,6 +423,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return null;
     }
 
+    @Override
     protected Object convert(boolean value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Boolean");
         if (!isNull) {
@@ -427,6 +443,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return null;
     }
 
+    @Override
     protected Object convert(Struct value, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Struct");
         if (value != null) {
@@ -441,6 +458,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected Object convert(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
         if (value != null) {
@@ -485,76 +503,92 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 statement.getObject(paramIndex));
     }
 
+    @Override
     protected void populateChar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateVarchar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateLongVarchar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateNChar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateNVarchar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateLongNVarchar(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateBinary(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
+
+    @Override
 
     protected void populateVarBinary(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateLongVarBinary(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateBlob(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getBlob(paramIndex));
     }
 
+    @Override
     protected void populateClob(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getClob(paramIndex));
     }
 
+    @Override
     protected void populateNClob(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getNClob(paramIndex));
     }
 
+    @Override
     protected void populateDate(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getDate(paramIndex, calendar));
     }
 
+    @Override
     protected void populateTime(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getTime(paramIndex, calendar));
     }
 
+    @Override
     protected void populateTimeWithTimeZone(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         try {
@@ -569,12 +603,14 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected void populateTimestamp(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getTimestamp(paramIndex, calendar));
     }
 
+    @Override
     protected void populateTimestampWithTimeZone(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         try {
@@ -589,80 +625,111 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         }
     }
 
+    @Override
     protected void populateArray(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getArray(paramIndex));
     }
 
+    @Override
     protected void populateRowID(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getRowId(paramIndex));
     }
 
+    @Override
     protected void populateTinyInt(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA, statement.getInt(paramIndex));
     }
 
+    @Override
     protected void populateSmallInt(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 Integer.valueOf(statement.getShort(paramIndex)));
     }
 
+    @Override
     protected void populateInteger(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 Long.valueOf(statement.getInt(paramIndex)));
     }
 
+    @Override
     protected void populateBigInt(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA, statement.getLong(paramIndex));
     }
 
+    @Override
     protected void populateReal(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateFloatAndReal(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateFloat(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
         populateFloatAndReal(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateDouble(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getDouble(paramIndex));
     }
 
+    @Override
     protected void populateNumeric(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateNumericAndDecimal(statement, parameter, paramIndex);
 
     }
 
+    @Override
     protected void populateDecimal(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateNumericAndDecimal(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateBit(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateBitAndBoolean(statement, parameter, paramIndex);
 
     }
 
+    @Override
     protected void populateBoolean(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateBitAndBoolean(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateRef(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateRefAndStruct(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateStruct(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         populateRefAndStruct(statement, parameter, paramIndex);
     }
 
+    @Override
     protected void populateXML(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
         parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
                 statement.getSQLXML(paramIndex));
+    }
+
+    // TODO: change after record iterator refactoring
+    public BObject createRecordIterator(ResultSet resultSet,
+                                               Statement statement,
+                                               Connection connection, List<ColumnDefinition> columnDefinitions,
+                                               StructureType streamConstraint) {
+        BObject resultIterator = ValueCreator.createObjectValue(ModuleUtils.getModule(),
+                Constants.RESULT_ITERATOR_OBJECT, new Object[1]);
+        resultIterator.addNativeData(Constants.RESULT_SET_NATIVE_DATA_FIELD, resultSet);
+        resultIterator.addNativeData(Constants.STATEMENT_NATIVE_DATA_FIELD, statement);
+        resultIterator.addNativeData(Constants.CONNECTION_NATIVE_DATA_FIELD, connection);
+        resultIterator.addNativeData(Constants.COLUMN_DEFINITIONS_DATA_FIELD, columnDefinitions);
+        resultIterator.addNativeData(Constants.RECORD_TYPE_DATA_FIELD, streamConstraint);
+        return resultIterator;
     }
 
 }
