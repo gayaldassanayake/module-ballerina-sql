@@ -74,7 +74,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
             .getInstance(TimeZone.getTimeZone(Constants.TIMEZONE_UTC.getValue()));
 
 
-    public ResultParameterProcessor getInstance() {
+    public static ResultParameterProcessor getInstance() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
