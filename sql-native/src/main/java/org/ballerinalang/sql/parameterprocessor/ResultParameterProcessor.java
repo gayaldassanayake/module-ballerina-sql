@@ -461,7 +461,32 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 statement.getString(paramIndex));
     }
 
-    protected void populateChar(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
+    private void populateFloatAndReal(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
+        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
+                statement.getFloat(paramIndex));
+    }
+
+    private void populateNumericAndDecimal(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
+        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
+                statement.getBigDecimal(paramIndex));
+    }
+
+    private void populateBitAndBoolean(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
+        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
+                statement.getBoolean(paramIndex));
+    }
+
+    private void populateRefAndStruct(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
+        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
+                statement.getObject(paramIndex));
+    }
+
+    protected void populateChar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
@@ -475,7 +500,8 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
-    protected void populateNChar(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
+    protected void populateNChar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException {
         populateCharacterTypes(statement, parameter, paramIndex);
     }
 
@@ -595,14 +621,12 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     protected void populateReal(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getFloat(paramIndex));
+        populateFloatAndReal(statement, parameter, paramIndex);
     }
 
     protected void populateFloat(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getFloat(paramIndex));
+        populateFloatAndReal(statement, parameter, paramIndex);
     }
 
     protected void populateDouble(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
@@ -611,33 +635,29 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     protected void populateNumeric(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getBigDecimal(paramIndex));
+        populateNumericAndDecimal(statement, parameter, paramIndex);
+
     }
 
     protected void populateDecimal(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getBigDecimal(paramIndex));
+        populateNumericAndDecimal(statement, parameter, paramIndex);
     }
 
     protected void populateBit(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getBoolean(paramIndex));
+        populateBitAndBoolean(statement, parameter, paramIndex);
+
     }
 
     protected void populateBoolean(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getBoolean(paramIndex));
+        populateBitAndBoolean(statement, parameter, paramIndex);
     }
 
     protected void populateRef(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getObject(paramIndex));
+        populateRefAndStruct(statement, parameter, paramIndex);
     }
 
     protected void populateStruct(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
-        parameter.addNativeData(Constants.ParameterObject.VALUE_NATIVE_DATA,
-                statement.getObject(paramIndex));
+        populateRefAndStruct(statement, parameter, paramIndex);
     }
 
     protected void populateXML(CallableStatement statement, BObject parameter, int paramIndex) throws SQLException {
