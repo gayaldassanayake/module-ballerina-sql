@@ -719,7 +719,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected void populateCustomOutParameters(CallableStatement statement, BObject parameter, int paramIndex, int sqlType)
+    public void populateCustomOutParameters(CallableStatement statement, BObject parameter, int paramIndex, int sqlType)
             throws ApplicationError {
         throw new ApplicationError("Unsupported SQL type '" + sqlType + "' when reading Procedure call " +
                 "Out parameter of index '" + paramIndex + "'.");

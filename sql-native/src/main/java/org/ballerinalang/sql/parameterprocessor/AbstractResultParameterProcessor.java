@@ -176,7 +176,7 @@ public abstract class AbstractResultParameterProcessor {
     protected abstract void populateXML(CallableStatement statement, BObject parameter, int paramIndex)
             throws SQLException;
 
-    protected abstract void populateCustomOutParameters(
+    public abstract void populateCustomOutParameters(
             CallableStatement statement, BObject parameter, int paramIndex, int sqlType) throws ApplicationError;
 
     protected abstract Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType);
