@@ -28,6 +28,7 @@ import org.ballerinalang.sql.exception.ApplicationError;
 import java.math.BigDecimal;
 import java.sql.Array;
 import java.sql.Blob;
+import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Struct;
@@ -72,70 +73,103 @@ public abstract class AbstractResultParameterProcessor {
 
     protected abstract Object convert(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException;
 
-    protected abstract void populateChar(BObject parameter, int paramIndex);
+    protected abstract void populateChar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateVarchar(BObject parameter, int paramIndex);
+    protected abstract void populateVarchar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateLongVarchar(BObject parameter, int paramIndex);
+    protected abstract void populateLongVarchar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateNChar(BObject parameter, int paramIndex);
+    protected abstract void populateNChar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateNVarchar(BObject parameter, int paramIndex);
+    protected abstract void populateNVarchar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateLongNVarchar(BObject parameter, int paramIndex);
+    protected abstract void populateLongNVarchar(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateBinary(BObject parameter, int paramIndex);
+    protected abstract void populateBinary(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateVarBinary(BObject parameter, int paramIndex);
+    protected abstract void populateVarBinary(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateLongVarBinary(BObject parameter, int paramIndex);
+    protected abstract void populateLongVarBinary(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateBlob(BObject parameter, int paramIndex);
+    protected abstract void populateBlob(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateClob(BObject parameter, int paramIndex);
+    protected abstract void populateClob(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateNClob(BObject parameter, int paramIndex);
+    protected abstract void populateNClob(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateDate(BObject parameter, int paramIndex);
+    protected abstract void populateDate(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateTime(BObject parameter, int paramIndex);
+    protected abstract void populateTime(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateTimeWithTimeZone(BObject parameter, int paramIndex);
+    protected abstract void populateTimeWithTimeZone(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateTimestamp(BObject parameter, int paramIndex);
+    protected abstract void populateTimestamp(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateTimestampWithTimeZone(BObject parameter, int paramIndex);
+    protected abstract void populateTimestampWithTimeZone(
+            CallableStatement statement, BObject parameter, int paramIndex) throws SQLException;
 
-    protected abstract void populateArray(BObject parameter, int paramIndex);
+    protected abstract void populateArray(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateRowID(BObject parameter, int paramIndex);
+    protected abstract void populateRowID(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateTinyInt(BObject parameter, int paramIndex);
+    protected abstract void populateTinyInt(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateSmallInt(BObject parameter, int paramIndex);
+    protected abstract void populateSmallInt(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateInteger(BObject parameter, int paramIndex);
+    protected abstract void populateInteger(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateBigInt(BObject parameter, int paramIndex);
+    protected abstract void populateBigInt(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateReal(BObject parameter, int paramIndex);
+    protected abstract void populateReal(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populatepopulateFloat(BObject parameter, int paramIndex);
+    protected abstract void populatepopulateFloat(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateDouble(BObject parameter, int paramIndex);
+    protected abstract void populateDouble(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateNumeric(BObject parameter, int paramIndex);
+    protected abstract void populateNumeric(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateDecimal(BObject parameter, int paramIndex);
+    protected abstract void populateDecimal(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateBit(BObject parameter, int paramIndex);
+    protected abstract void populateBit(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateBoolean(BObject parameter, int paramIndex);
+    protected abstract void populateBoolean(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateRef(BObject parameter, int paramIndex);
+    protected abstract void populateRef(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateStruct(BObject parameter, int paramIndex);
+    protected abstract void populateStruct(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
-    protected abstract void populateSQLXML(BObject parameter, int paramIndex);
+    protected abstract void populateXML(CallableStatement statement, BObject parameter, int paramIndex)
+            throws SQLException;
 
 }
