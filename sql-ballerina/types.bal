@@ -402,6 +402,7 @@ class ResultIterator {
 
 public type CustomResultIterator object{
     isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
+    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
 };
 
 # Represents all OUT parameters used in SQL stored procedure call.
@@ -794,7 +795,8 @@ public class ProcedureCallResult {
     }
 }
 
-public type CustomProcedureCallResult object{
-    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
-};
-
+public class CustomProcedureCallResult {
+    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
+        'class: "org.ballerinalang.sql.utils.CustomProcedureCallResultUtils"
+    } external;
+}

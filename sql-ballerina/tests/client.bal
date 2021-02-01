@@ -92,7 +92,7 @@ type SQLParams record {|
 
 function createSqlClient(Client sqlClient, SQLParams sqlParams, ConnectionPool globalConnPool)
 returns Error? = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.ClientProcessor"
+    'class: "org.ballerinalang.sql.utils.ClientUtils"
 } external;
 
 function nativeQuery(Client sqlClient, string|ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
@@ -116,5 +116,5 @@ returns ProcedureCallResult|Error = @java:Method {
 } external;
 
 function close(Client Client) returns Error? = @java:Method {
-    'class: "org.ballerinalang.sql.nativeimpl.ClientProcessor"
+    'class: "org.ballerinalang.sql.utils.ClientUtils"
 } external;
