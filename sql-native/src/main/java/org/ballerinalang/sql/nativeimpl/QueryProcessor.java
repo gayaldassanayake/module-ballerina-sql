@@ -111,8 +111,6 @@ public class QueryProcessor {
                 BError errorValue = ErrorGenerator.getSQLApplicationError(
                         "Error while executing SQL query: " + sqlQuery + ". " + message);
                 return getErrorStream(recordType, errorValue);
-            } finally {
-                // Utils.closeResources(trxResourceManager, resultSet, statement, connection);
             }
         } else {
             BError errorValue = ErrorGenerator.getSQLApplicationError("Client is not properly initialized!");
