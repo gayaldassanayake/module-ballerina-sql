@@ -32,6 +32,7 @@ import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.datasource.SQLDatasource;
 import org.ballerinalang.sql.exception.ApplicationError;
 import org.ballerinalang.sql.parameterprocessor.ResultParameterProcessor;
+import org.ballerinalang.sql.parameterprocessor.StatementParameterProcessor;
 import org.ballerinalang.sql.utils.ColumnDefinition;
 import org.ballerinalang.sql.utils.ErrorGenerator;
 import org.ballerinalang.sql.utils.ModuleUtils;
@@ -49,15 +50,15 @@ import java.util.List;
 public class QueryProcessor {
 
     public static BStream nativeQuery(BObject client, Object paramSQLString,
-                                      Object recordType){
+                                      Object recordType) {
         StatementParameterProcessor statementParametersProcessor = StatementParameterProcessor.getInstance();
         ResultParameterProcessor resultParametersProcessor = ResultParameterProcessor.getInstance();
-        return nativeQuery(client, paramSQLString, recordType, statementParameterProcessor, resultParameterProcessor);
+        return nativeQuery(client, paramSQLString, recordType, statementParametersProcessor, resultParametersProcessor);
     }
 
     public static BStream nativeQuery(BObject client, Object paramSQLString,
-                                      Object recordType, StatementParametersProcessor statementParametersProcessor,
-                                      ResultParametersProcessor resultParametersProcessor
+                                      Object recordType, StatementParameterProcessor statementParametersProcessor,
+                                      ResultParameterProcessor resultParametersProcessor
     ) {
         Object dbClient = client.getNativeData(Constants.DATABASE_CLIENT);
         TransactionResourceManager trxResourceManager = TransactionResourceManager.getInstance();
@@ -89,20 +90,17 @@ public class QueryProcessor {
                     columnDefinitions = Utils.getColumnDefinitions(resultSet, streamConstraint);
                 }
                 return ValueCreator.createStreamValue(TypeCreator.createStreamType(streamConstraint),
-                        resultParametersProcessor.createRecordIterator(resultSet, statement, connection, columnDefinitions,
-                                streamConstraint));
+                        resultParametersProcessor.createRecordIterator(resultSet, statement, connection, 
+                        columnDefinitions, streamConstraint));
             } catch (SQLException e) {
-                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 BError errorValue = ErrorGenerator.getSQLDatabaseError(e,
                         "Error while executing SQL query: " + sqlQuery + ". ");
                 return ValueCreator.createStreamValue(TypeCreator.createStreamType(Utils.getDefaultStreamConstraint()),
                         createRecordIterator(errorValue));
             } catch (ApplicationError applicationError) {
-                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 BError errorValue = ErrorGenerator.getSQLApplicationError(applicationError.getMessage());
                 return getErrorStream(recordType, errorValue);
             } catch (Throwable e) {
-                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 String message = e.getMessage();
                 if (message == null) {
                     message = e.getClass().getName();
@@ -110,6 +108,8 @@ public class QueryProcessor {
                 BError errorValue = ErrorGenerator.getSQLApplicationError(
                         "Error while executing SQL query: " + sqlQuery + ". " + message);
                 return getErrorStream(recordType, errorValue);
+            } finally {
+                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
             }
         } else {
             BError errorValue = ErrorGenerator.getSQLApplicationError("Client is not properly initialized!");
@@ -130,7 +130,7 @@ public class QueryProcessor {
 
     private static BObject createRecordIterator(BError errorValue) {
         return ValueCreator.createObjectValue(ModuleUtils.getModule(), Constants.RESULT_ITERATOR_OBJECT,
-                errorValue);
+            new Object[] { errorValue, null});
     }
 
 }

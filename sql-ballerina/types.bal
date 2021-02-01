@@ -349,9 +349,11 @@ public type ExecutionResult record {
 class ResultIterator {
     private boolean isClosed = false;
     private Error? err;
+    public TestResultIterator? testResultIterator;
 
-    public isolated function init(Error? err = ()) {
+    public isolated function init(Error? err = (), TestResultIterator? testResultIterator = ()) {
         self.err = err;
+        self.testResultIterator = testResultIterator;
     }
 
     public isolated function next() returns record {|record {} value;|}|Error? {
@@ -362,7 +364,14 @@ class ResultIterator {
         if (self.err is Error) {
             return self.err;
         } else {
-            record {}|Error? result = nextResult(self);
+            TestResultIterator? ti = self.testResultIterator;
+            record {}|Error? result;
+            if(ti is TestResultIterator){
+                result = ti.nextResult(self);
+            }
+            else{
+                result = nextResult(self);
+            }
             if (result is record {}) {
                 record {|
                     record {} value;
@@ -390,6 +399,23 @@ class ResultIterator {
             }
         }
     }
+}
+
+class TestResultIterator{
+    // private boolean a = true;
+    
+    public isolated function init() {
+        
+    }
+
+    isolated function nextResult(ResultIterator iterator) returns record {}|Error? = @java:Method {
+    'class: "org.ballerinalang.sql.utils.TestRecordIteratorUtils"
+    } external; 
+
+
+    function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
+    'class: "org.ballerinalang.sql.utils.ProcedureCallResultUtils"
+    } external; 
 }
 
 # Represents all OUT parameters used in SQL stored procedure call.
