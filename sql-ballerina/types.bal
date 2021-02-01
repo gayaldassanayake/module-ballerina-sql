@@ -349,11 +349,11 @@ public type ExecutionResult record {
 class ResultIterator {
     private boolean isClosed = false;
     private Error? err;
-    public TestResultIterator? testResultIterator;
+    public CustomResultIterator? customResultIterator;
 
-    public isolated function init(Error? err = (), TestResultIterator? testResultIterator = ()) {
+    public isolated function init(Error? err = (), CustomResultIterator? customResultIterator = ()) {
         self.err = err;
-        self.testResultIterator = testResultIterator;
+        self.customResultIterator = customResultIterator;
     }
 
     public isolated function next() returns record {|record {} value;|}|Error? {
@@ -364,10 +364,9 @@ class ResultIterator {
         if (self.err is Error) {
             return self.err;
         } else {
-            TestResultIterator? ti = self.testResultIterator;
             record {}|Error? result;
-            if(ti is TestResultIterator){
-                result = ti.nextResult(self);
+            if(self.customResultIterator is CustomResultIterator){
+                result = (<CustomResultIterator>self.customResultIterator).nextResult(self);
             }
             else{
                 result = nextResult(self);
@@ -401,22 +400,11 @@ class ResultIterator {
     }
 }
 
-class TestResultIterator{
-    // private boolean a = true;
-    
-    public isolated function init() {
-        
-    }
+public type CustomResultIterator object{
+    isolated function nextResult(ResultIterator iterator) returns record {}|Error?;
+    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
+};
 
-    isolated function nextResult(ResultIterator iterator) returns record {}|Error? = @java:Method {
-    'class: "org.ballerinalang.sql.utils.TestRecordIteratorUtils"
-    } external; 
-
-
-    function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
-    'class: "org.ballerinalang.sql.utils.ProcedureCallResultUtils"
-    } external; 
-}
 
 # Represents all OUT parameters used in SQL stored procedure call.
 public type OutParameter object {
