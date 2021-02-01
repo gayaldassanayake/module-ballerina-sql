@@ -405,7 +405,6 @@ public type CustomResultIterator object{
     isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error;
 };
 
-
 # Represents all OUT parameters used in SQL stored procedure call.
 public type OutParameter object {
 
@@ -771,12 +770,20 @@ public type ParameterizedCallQuery object {
 public class ProcedureCallResult {
     public ExecutionResult? executionResult = ();
     public stream<record {}, Error>? queryResult = ();
+    public CustomProcedureCallResult? customProcedureCallResult;
+
+    public isolated function init(CustomProcedureCallResult? customProcedureCallResult = ()) {
+        self.customProcedureCallResult = customProcedureCallResult;
+    }
 
     # Updates `executionResult` or `queryResult` with the next result in the result. This will also close the current
     # results by default.
     #
     # + return - True if the next result is `queryResult`
     public isolated function getNextQueryResult() returns boolean|Error {
+        if(self.customProcedureCallResult is CustomProcedureCallResult){
+            return (<CustomProcedureCallResult>self.customProcedureCallResult).getNextQueryResult(self);
+        }
         return getNextQueryResult(self);
     }
 
@@ -786,4 +793,10 @@ public class ProcedureCallResult {
     public isolated function close() returns Error? {
         return closeCallResult(self);
     }
+}
+
+public class CustomProcedureCallResult {
+    isolated function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
+        'class: "org.ballerinalang.sql.utils.CustomProcedureCallResultUtils"
+    } external;
 }
