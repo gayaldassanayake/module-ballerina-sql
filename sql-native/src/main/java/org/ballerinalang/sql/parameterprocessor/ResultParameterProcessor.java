@@ -724,7 +724,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
+    public Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
         return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 
