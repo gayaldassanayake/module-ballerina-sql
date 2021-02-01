@@ -137,7 +137,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
                 refValueArray.add(i, firstNonNullElement);
             }
         } else {
-            return createAndPopulateCustomBBRefValueArray(firstNonNullElement, dataArray, type);
+            createAndPopulateCustomBBRefValueArray(firstNonNullElement, dataArray, type);
         }
         return refValueArray;
     }
@@ -152,9 +152,8 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
 
     @Override
     protected BArray createAndPopulateCustomBBRefValueArray(Object firstNonNullElement, Object[] dataArray,
-                                                            Type type) throws ApplicationError {
-        throw new ApplicationError("Error while populating data of unsupported type to ballerina type " +
-                type + " to into array ");
+                                                            Type type) {
+        return null;
     }
 
     protected BArray createAndPopulatePrimitiveValueArray(Object firstNonNullElement, Object[] dataArray)
@@ -208,9 +207,8 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected BArray createAndPopulateCustomValueArray(Object firstNonNullElement, Object[] dataArray)
-            throws ApplicationError {
-        throw new ApplicationError("Error while populating data of unsupported type to ballerina type to into array ");
+    protected BArray createAndPopulateCustomValueArray(Object firstNonNullElement, Object[] dataArray) {
+        return null;
     }
 
     protected BMap<BString, Object> createUserDefinedType(Struct structValue, StructureType structType)
@@ -726,7 +724,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
+    public Object getCustomOutParameters(Object value, int sqlType, Type ballerinaType) {
         return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 

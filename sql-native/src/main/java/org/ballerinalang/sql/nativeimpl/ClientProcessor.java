@@ -37,12 +37,12 @@ public class ClientProcessor {
     private ClientProcessor() {
     }
 
-    public Object createSqlClient(BObject client, BMap<BString, Object> sqlDatasourceParams,
+    public static Object createSqlClient(BObject client, BMap<BString, Object> sqlDatasourceParams,
                                          BMap<BString, Object> globalConnectionPool) {
         return createClient(client, SQLDatasource.createSQLDatasourceParams(sqlDatasourceParams, globalConnectionPool));
     }
 
-    public Object close(BObject client) {
+    public static Object close(BObject client) {
         Object datasourceObj = client.getNativeData(Constants.DATABASE_CLIENT);
         // When an exception is thrown during database endpoint init (eg: driver not present) stop operation
         // of the endpoint is automatically called. But at this point, datasource is null therefore to handle that
@@ -53,7 +53,7 @@ public class ClientProcessor {
         return null;
     }
 
-    private Object createClient(BObject client, SQLDatasource.SQLDatasourceParams sqlDatasourceParams) {
+    private static Object createClient(BObject client, SQLDatasource.SQLDatasourceParams sqlDatasourceParams) {
         try {
             SQLDatasource sqlDatasource = SQLDatasource.retrieveDatasource(sqlDatasourceParams);
             client.addNativeData(Constants.DATABASE_CLIENT, sqlDatasource);

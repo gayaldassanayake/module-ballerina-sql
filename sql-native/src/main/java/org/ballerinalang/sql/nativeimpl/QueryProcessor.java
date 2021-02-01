@@ -93,14 +93,17 @@ public class QueryProcessor {
                         resultParametersProcessor.createRecordIterator(resultSet, statement, connection, 
                         columnDefinitions, streamConstraint));
             } catch (SQLException e) {
+                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 BError errorValue = ErrorGenerator.getSQLDatabaseError(e,
                         "Error while executing SQL query: " + sqlQuery + ". ");
                 return ValueCreator.createStreamValue(TypeCreator.createStreamType(Utils.getDefaultStreamConstraint()),
                         createRecordIterator(errorValue));
             } catch (ApplicationError applicationError) {
+                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 BError errorValue = ErrorGenerator.getSQLApplicationError(applicationError.getMessage());
                 return getErrorStream(recordType, errorValue);
             } catch (Throwable e) {
+                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
                 String message = e.getMessage();
                 if (message == null) {
                     message = e.getClass().getName();
@@ -108,8 +111,6 @@ public class QueryProcessor {
                 BError errorValue = ErrorGenerator.getSQLApplicationError(
                         "Error while executing SQL query: " + sqlQuery + ". " + message);
                 return getErrorStream(recordType, errorValue);
-            } finally {
-                Utils.closeResources(trxResourceManager, resultSet, statement, connection);
             }
         } else {
             BError errorValue = ErrorGenerator.getSQLApplicationError("Client is not properly initialized!");

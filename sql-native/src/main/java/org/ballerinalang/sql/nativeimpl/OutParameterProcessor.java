@@ -24,6 +24,8 @@ import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BTypedesc;
 import org.ballerinalang.sql.Constants;
 import org.ballerinalang.sql.exception.ApplicationError;
+import org.ballerinalang.sql.parameterprocessor.ResultParameterProcessor;
+import org.ballerinalang.sql.utils.ErrorGenerator;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -52,7 +54,7 @@ import static org.ballerinalang.sql.utils.Utils.getString;
 public class OutParameterProcessor {
 
     public static Object get(BObject result, BTypedesc typeDesc) {
-        get(result, typeDesc, ResultParameterProcessor.getInstance());
+        return get(result, typeDesc, ResultParameterProcessor.getInstance());
     }
 
     public static Object get(BObject result, BTypedesc typeDesc, ResultParameterProcessor resultParameterProcessor) {
@@ -75,8 +77,8 @@ public class OutParameterProcessor {
                     if (ballerinaType.getTag() == TypeTags.STRING_TAG) {
                         return resultParameterProcessor.convert((String) value, sqlType, ballerinaType);
                     } else {
-                        return resultParameterProcessor.convert(((String) value).getBytes(Charset.defaultCharset()), sqlType, ballerinaType,
-                                JDBCType.valueOf(sqlType).getName());
+                        return resultParameterProcessor.convert(((String) value).getBytes(Charset.defaultCharset()),
+                         sqlType, ballerinaType, JDBCType.valueOf(sqlType).getName());
                     }
                 case Types.ARRAY:
                     return resultParameterProcessor.convert((Array) value, sqlType, ballerinaType);
@@ -97,7 +99,8 @@ public class OutParameterProcessor {
                 case Types.TIMESTAMP_WITH_TIMEZONE:
                     return resultParameterProcessor.convert((Timestamp) value, sqlType, ballerinaType);
                 case Types.ROWID:
-                    return resultParameterProcessor.convert(((RowId) value).getBytes(), sqlType, ballerinaType, "SQL RowID");
+                    return resultParameterProcessor.convert(((RowId) value).getBytes(), sqlType,
+                           ballerinaType, "SQL RowID");
                 case Types.TINYINT:
                 case Types.SMALLINT:
                     if (value == null) {
@@ -139,7 +142,7 @@ public class OutParameterProcessor {
                 case Types.SQLXML:
                     return resultParameterProcessor.convert((SQLXML) value, sqlType, ballerinaType);
                 default:
-                    return resultParameterProcessor.customOutParameter();
+                    return resultParameterProcessor.getCustomOutParameters(value, sqlType, ballerinaType);
                     // return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
             }
         } catch (ApplicationError | IOException applicationError) {
