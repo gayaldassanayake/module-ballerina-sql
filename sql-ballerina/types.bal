@@ -401,23 +401,6 @@ class ResultIterator {
     }
 }
 
-class TestResultIterator{
-    // private boolean a = true;
-    
-    public isolated function init() {
-        
-    }
-
-    isolated function nextResult(ResultIterator iterator) returns record {}|Error? = @java:Method {
-    'class: "org.ballerinalang.sql.utils.TestRecordIteratorUtils"
-    } external; 
-
-
-    function getNextQueryResult(ProcedureCallResult callResult) returns boolean|Error = @java:Method {
-    'class: "org.ballerinalang.sql.utils.TestProcedureCallResultUtils"
-    } external; 
-}
-
 # Represents all OUT parameters used in SQL stored procedure call.
 public type OutParameter object {
 
