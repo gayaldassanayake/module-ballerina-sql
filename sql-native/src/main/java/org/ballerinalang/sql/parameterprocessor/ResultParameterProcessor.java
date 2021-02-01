@@ -752,6 +752,11 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     public Object getCustomResult(ResultSet resultSet, int columnIndex, ColumnDefinition columnDefinition)
         throws ApplicationError {
     throw new ApplicationError("Unsupported SQL type " + columnDefinition.getSqlName());
-}
+    }
+
+    public BObject getCustomProcedureCallObject() {
+        return null;
+    }
+
 
 }

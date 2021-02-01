@@ -93,8 +93,10 @@ public class CallProcessor {
                             resultParameterProcessor);
                 }
 
+                BObject iteratorObject = resultParameterProcessor.getCustomProcedureCallObject();
+
                 BObject procedureCallResult = ValueCreator.createObjectValue(ModuleUtils.getModule(),
-                        PROCEDURE_CALL_RESULT);
+                        PROCEDURE_CALL_RESULT, new Object[]{iteratorObject});
                 Object[] recordDescriptions = recordTypes.getValues();
                 int resultSetCount = 0;
                 if (resultType) {
