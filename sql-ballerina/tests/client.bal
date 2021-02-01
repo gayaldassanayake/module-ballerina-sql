@@ -97,22 +97,22 @@ returns Error? = @java:Method {
 
 function nativeQuery(Client sqlClient, string|ParameterizedQuery sqlQuery, typedesc<record {}>? rowType)
 returns stream <record {}, Error> = @java:Method {
-    'class: "org.ballerinalang.sql.utils.QueryUtils"
+    'class: "org.ballerinalang.sql.nativeimpl.QueryProcessor"
 } external;
 
 function nativeExecute(Client sqlClient, string|ParameterizedQuery sqlQuery)
 returns ExecutionResult|Error = @java:Method {
-    'class: "org.ballerinalang.sql.utils.ExecuteUtils"
+    'class: "org.ballerinalang.sql.nativeimpl.ExecuteProcessor"
 } external;
 
 function nativeBatchExecute(Client sqlClient, ParameterizedQuery[] sqlQueries)
 returns ExecutionResult[]|Error = @java:Method {
-    'class: "org.ballerinalang.sql.utils.ExecuteUtils"
+    'class: "org.ballerinalang.sql.nativeimpl.ExecuteProcessor"
 } external;
 
 function nativeCall(Client sqlClient, string|ParameterizedCallQuery sqlQuery, typedesc<record {}>[] rowTypes)
 returns ProcedureCallResult|Error = @java:Method {
-    'class: "org.ballerinalang.sql.utils.CallUtils"
+    'class: "org.ballerinalang.sql.nativeimpl.CallProcessor"
 } external;
 
 function close(Client Client) returns Error? = @java:Method {
