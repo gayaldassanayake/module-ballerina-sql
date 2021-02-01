@@ -6,4 +6,4 @@ version = "@stdlib.io.version@"
 [[dependency]]
 org = "ballerina"
 name = "time"
-version = "@stdlib.io.version@"
+version = "@stdlib.time.version@"
