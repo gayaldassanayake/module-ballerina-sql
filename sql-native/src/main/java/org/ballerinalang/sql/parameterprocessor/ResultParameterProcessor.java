@@ -70,10 +70,6 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     private static final Object lock = new Object();
     private static volatile ResultParameterProcessor instance;
 
-    // TODO: remove after testing
-    private static final Object lock2 = new Object();
-    private static volatile BObject iteratorObject;
-
     private static final ArrayType stringArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_STRING);
     private static final ArrayType booleanArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_BOOLEAN);
     private static final ArrayType intArrayType = TypeCreator.createArrayType(PredefinedTypes.TYPE_INT);
@@ -315,7 +311,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected BArray convert(Array array, int sqlType, Type type) throws SQLException, ApplicationError {
+    public BArray convert(Array array, int sqlType, Type type) throws SQLException, ApplicationError {
         if (array != null) {
             Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Array");
             Object[] dataArray = (Object[]) array.getArray();
@@ -341,20 +337,20 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected BString convert(String value, int sqlType, Type type) throws ApplicationError {
+    public BString convert(String value, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL String");
         return fromString(value);
     }
 
     @Override
-    protected Object convert(
+    public Object convert(
             String value, int sqlType, Type type, String sqlTypeName) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, sqlTypeName);
         return fromString(value);
     }
 
     @Override
-    protected Object convert(byte[] value, int sqlType, Type type, String sqlTypeName) throws ApplicationError {
+    public Object convert(byte[] value, int sqlType, Type type, String sqlTypeName) throws ApplicationError {
         if (value != null) {
             return ValueCreator.createArrayValue(value);
         } else {
@@ -363,7 +359,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(long value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+    public Object convert(long value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL long or integer");
         if (isNull) {
             return null;
@@ -376,7 +372,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(double value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+    public Object convert(double value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL double or float");
         if (isNull) {
             return null;
@@ -389,7 +385,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(BigDecimal value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+    public Object convert(BigDecimal value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL decimal or real");
         if (isNull) {
             return null;
@@ -402,7 +398,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(Blob value, int sqlType, Type type) throws ApplicationError, SQLException {
+    public Object convert(Blob value, int sqlType, Type type) throws ApplicationError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Blob");
         if (value != null) {
             return ValueCreator.createArrayValue(value.getBytes(1L, (int) value.length()));
@@ -412,7 +408,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(java.util.Date date, int sqlType, Type type) throws ApplicationError {
+    public Object convert(java.util.Date date, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Date/Time");
         if (date != null) {
             switch (type.getTag()) {
@@ -429,7 +425,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(boolean value, int sqlType, Type type, boolean isNull) throws ApplicationError {
+    public Object convert(boolean value, int sqlType, Type type, boolean isNull) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Boolean");
         if (!isNull) {
             switch (type.getTag()) {
@@ -449,7 +445,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(Struct value, int sqlType, Type type) throws ApplicationError {
+    public Object convert(Struct value, int sqlType, Type type) throws ApplicationError {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL Struct");
         if (value != null) {
             if (type instanceof RecordType) {
@@ -464,7 +460,7 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
     }
 
     @Override
-    protected Object convert(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
+    public Object convert(SQLXML value, int sqlType, Type type) throws ApplicationError, SQLException {
         Utils.validatedInvalidFieldAssignment(sqlType, type, "SQL XML");
         if (value != null) {
             if (type instanceof BXml) {
@@ -734,18 +730,8 @@ public class ResultParameterProcessor extends AbstractResultParameterProcessor {
         return ErrorGenerator.getSQLApplicationError("Unsupported SQL type " + sqlType);
     }
 
-
-    // TODO: change to return null after testing
     protected BObject getIteratorObject() {
-        if (iteratorObject == null) {
-            synchronized (lock2) {
-                if (iteratorObject == null) {
-                    iteratorObject = ValueCreator.createObjectValue(
-                            ModuleUtils.getModule(), "TestResultIterator");
-                }
-            }
-        }
-        return iteratorObject;
+        return null;
     }
 
     public BObject createRecordIterator(ResultSet resultSet,
