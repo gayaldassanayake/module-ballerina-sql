@@ -24,8 +24,5 @@ module io.ballerina.stdlib.sql {
     requires io.ballerina.stdlib.io;
     requires io.ballerina.stdlib.time;
     requires transactions.jdbc;
-    exports org.ballerinalang.sql.utils;
-    exports org.ballerinalang.sql.datasource;
-    exports org.ballerinalang.sql.parameterprocessor;
-    exports org.ballerinalang.sql.nativeimpl;
+    exports org.ballerinalang.sql;
 }

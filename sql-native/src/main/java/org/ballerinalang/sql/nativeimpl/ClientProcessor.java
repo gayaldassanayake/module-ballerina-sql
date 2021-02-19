@@ -37,9 +37,18 @@ public class ClientProcessor {
     private ClientProcessor() {
     }
 
-    public static Object createSqlClient(BObject client, BMap<BString, Object> sqlDatasourceParams,
+    public static Object createSqlClient(BObject client, BMap<BString, Object> sqlDatasourceParamMap,
                                          BMap<BString, Object> globalConnectionPool) {
-        return createClient(client, SQLDatasource.createSQLDatasourceParams(sqlDatasourceParams, globalConnectionPool));
+        try {
+            SQLDatasource.SQLDatasourceParams sqlDatasourceParams = SQLDatasource.createSQLDatasourceParams(
+                    sqlDatasourceParamMap, globalConnectionPool);
+            SQLDatasource sqlDatasource = SQLDatasource.retrieveDatasource(sqlDatasourceParams);
+            client.addNativeData(Constants.DATABASE_CLIENT, sqlDatasource);
+            client.addNativeData(Constants.SQL_CONNECTOR_TRANSACTION_ID, UUID.randomUUID().toString());
+            return null;
+        } catch (BError errorValue) {
+            return errorValue;
+        }
     }
 
     public static Object close(BObject client) {
@@ -51,16 +60,5 @@ public class ClientProcessor {
             ((SQLDatasource) datasourceObj).decrementClientCounterAndAttemptPoolShutdown();
         }
         return null;
-    }
-
-    public static Object createClient(BObject client, SQLDatasource.SQLDatasourceParams sqlDatasourceParams) {
-        try {
-            SQLDatasource sqlDatasource = SQLDatasource.retrieveDatasource(sqlDatasourceParams);
-            client.addNativeData(Constants.DATABASE_CLIENT, sqlDatasource);
-            client.addNativeData(Constants.SQL_CONNECTOR_TRANSACTION_ID, UUID.randomUUID().toString());
-            return null;
-        } catch (BError errorValue) {
-            return errorValue;
-        }
     }
 }
